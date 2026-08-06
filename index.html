@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no"
+    />
+
+    <title>FinTrack — Finanzas Personales</title>
+    <meta
+      name="description"
+      content="Controla tus ingresos, gastos, presupuestos y metas de ahorro desde tu iPhone."
+    />
+
+    <!-- PWA / manifest -->
+    <meta name="theme-color" content="#0A84FF" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- iOS: hace que la PWA se sienta instalable y "nativa" en Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="FinTrack" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Splash screens de iOS: iPhone genera el splash a partir de estos links -->
+    <link rel="apple-touch-startup-image" href="/icons/icon-512.png" />
+
+    <link rel="icon" type="image/png" href="/favicon.ico" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

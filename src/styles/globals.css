@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    /* Evita el "bounce" elástico nativo de Safari en iOS para que la app se sienta nativa */
+    overscroll-behavior-y: none;
+  }
+
+  body {
+    @apply bg-surface-light text-[#1C1C1E] antialiased;
+    @apply dark:bg-surface-dark dark:text-[#F2F2F7];
+    /* Respeta el notch / Dynamic Island y la home indicator bar */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  * {
+    @apply border-border-light dark:border-border-dark;
+  }
+}
+
+@layer components {
+  /* Tarjeta con efecto glassmorphism, el elemento de firma visual de FinTrack */
+  .glass-card {
+    @apply rounded-card border border-white/40 dark:border-white/10;
+    @apply bg-white/60 dark:bg-white/[0.06];
+    @apply backdrop-blur-glass backdrop-saturate-150;
+    @apply shadow-card dark:shadow-card-dark;
+  }
+
+  .glass-sheet {
+    @apply rounded-t-sheet border-t border-white/40 dark:border-white/10;
+    @apply bg-white/80 dark:bg-[#1C1C1E]/90;
+    @apply backdrop-blur-glass backdrop-saturate-150;
+  }
+}
+
+@layer utilities {
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
