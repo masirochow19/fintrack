@@ -416,3 +416,79 @@ calendario**:
 Cuando confirmes que Calendario funciona, seguimos con la pantalla de
 **Perfil**: editar datos, cambiar tema, exportar datos y cerrar sesión (ya
 implementado, falta lo demás).
+
+## Paso 11: Perfil completo
+
+Ya está la pantalla de Perfil completa (reemplaza el placeholder):
+
+- **Editar nombre** (el correo se muestra pero no es editable, ya que
+  cambiarlo requiere reverificación de Supabase Auth — no está en el
+  alcance del proyecto por ahora).
+- **Cambiar tema**: Claro / Oscuro / Sistema. Ya no es solo un toggle local
+  — se guarda en `configuracion_usuario` y viaja contigo si usas la app en
+  otro dispositivo (la preferencia guardada en Supabase manda sobre la
+  local al iniciar sesión).
+- **Exportar datos**: descarga todos tus movimientos como CSV (abrible
+  directo en Excel/Numbers/Sheets), con fecha, tipo, monto, categoría,
+  método de pago, descripción y notas.
+- Accesos rápidos a **Categorías** y **Calendario**.
+- **Cerrar sesión** (ya existía desde el Paso 3).
+
+No requiere ninguna migración nueva — usa la tabla `configuracion_usuario`
+del Paso 2.
+
+### Cómo probarlo
+
+1. `npm install && npm run dev`, inicia sesión, ve a **Perfil**.
+2. Cambia tu nombre y confirma que se guarda (aparece "¡Guardado!" en el
+   botón).
+3. Prueba los 3 modos de tema y confirma que la app cambia de inmediato.
+4. Toca "Exportar movimientos" y confirma que se descarga un `.csv` que
+   abre bien en Excel/Numbers.
+
+## Próximos pasos
+
+Con esto ya están las 9 pantallas principales del proyecto. Lo que queda del
+prompt original son las **funciones premium** (buscador, filtros, exportar
+PDF, notificaciones/recordatorios, gastos recurrentes, copia de seguridad,
+importar CSV) y la **preparación para IA** (OCR de boletas, clasificación
+automática, chat de preguntas sobre tus finanzas) — dime con cuál quieres
+seguir, o si prefieres que primero pulamos algo de lo ya construido.
+
+## Extra: Registro de días pagados
+
+Sección pensada para trabajo independiente (ej. reparto), donde cada día
+puede o no traer un pago. Accesible desde **Perfil → Días pagados**:
+
+- **Calendario mensual** donde cada día se pinta según su estado: verde si
+  marcaste "pagado", rojo si marcaste "no pagado", sin color si no lo has
+  marcado.
+- Al tocar un día:
+  - **Marcar pagado** te pide el monto y crea automáticamente un
+    **movimiento de ingreso** ese día (asociado a la categoría "Sueldo" si
+    existe), así se refleja en el Dashboard, Estadísticas y todo lo demás.
+  - **Marcar no pagado** solo deja el registro, sin crear ningún
+    movimiento.
+  - **Quitar marca** borra el registro del día (y el ingreso asociado, si
+    lo había).
+  - Si cambias el monto o el estado de un día ya marcado, el ingreso
+    anterior se reemplaza — nunca quedan duplicados.
+- Arriba del calendario, un resumen del mes: días pagados, días no pagados,
+  y el total recibido.
+
+### Aplicar la nueva migración
+
+Pega el contenido de `supabase/migrations/0008_registro_pago_diario.sql`
+en el **SQL Editor** de Supabase → **Run**.
+
+### Cómo probarlo
+
+1. Aplica la migración.
+2. `npm install && npm run dev`, ve a **Perfil → Días pagados**.
+3. Marca un par de días como pagados con distintos montos, y un par como no
+   pagados.
+4. Confirma que el resumen de arriba (días pagados/no pagados/total) es
+   correcto, y que los ingresos aparecen en el Dashboard y en "Últimos
+   movimientos".
+5. Cambia el monto de un día ya marcado y confirma que no queda un ingreso
+   duplicado (el anterior se reemplaza).

@@ -130,6 +130,7 @@ export function NewMovementPage() {
               value={categoriaId}
               onChange={(id) => setValue("categoria_id", id, { shouldValidate: true })}
               error={errors.categoria_id?.message}
+              tipo={tipo}
             />
           </div>
         )}

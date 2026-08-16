@@ -5,7 +5,6 @@ import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "@/pages/auth/ResetPasswordPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { EstadisticasPage } from "@/pages/EstadisticasPage";
-import { ProfilePlaceholderPage } from "@/pages/ProfilePlaceholderPage";
 import { NewMovementPage } from "@/pages/movimientos/NewMovementPage";
 import { CategoriesPage } from "@/pages/categorias/CategoriesPage";
 import { CategoryFormPage } from "@/pages/categorias/CategoryFormPage";
@@ -16,6 +15,8 @@ import { MetasPage } from "@/pages/MetasPage";
 import { NewGoalPage } from "@/pages/metas/NewGoalPage";
 import { GoalDetailPage } from "@/pages/metas/GoalDetailPage";
 import { CalendarioPage } from "@/pages/CalendarioPage";
+import { ProfilePage } from "@/pages/ProfilePage";
+import { RegistroPagosPage } from "@/pages/RegistroPagosPage";
 import { ProtectedRoute, PublicOnlyRoute } from "@/routes/ProtectedRoute";
 import { MainLayout } from "@/layouts/MainLayout";
 
@@ -42,7 +43,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/perfil",
-        element: <ProfilePlaceholderPage />,
+        element: <ProfilePage />,
       },
     ],
   },
@@ -116,6 +117,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <CalendarioPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/dias-pagados",
+    element: (
+      <ProtectedRoute>
+        <RegistroPagosPage />
       </ProtectedRoute>
     ),
   },

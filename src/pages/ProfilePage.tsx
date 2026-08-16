@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { Calendar, Download, LogOut, Tag, User } from "lucide-react";
+import { Calendar, CalendarCheck, Download, LogOut, Tag, User } from "lucide-react";
 import { TextField } from "@/components/ui/TextField";
 import { Button } from "@/components/ui/Button";
 import { ThemeSelector } from "@/components/perfil/ThemeSelector";
@@ -117,6 +117,13 @@ export function ProfilePage() {
         >
           <Tag size={18} className="text-ios-blue" />
           Gestionar categorías
+        </Link>
+        <Link
+          to="/dias-pagados"
+          className="flex items-center gap-3 px-4 py-3.5 text-sm font-medium"
+        >
+          <CalendarCheck size={18} className="text-ios-blue" />
+          Días pagados
         </Link>
         <Link
           to="/calendario"

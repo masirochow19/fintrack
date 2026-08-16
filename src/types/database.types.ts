@@ -168,6 +168,24 @@ export interface Database {
         };
         Update: Partial<Database["public"]["Tables"]["metas"]["Row"]>;
       };
+      registro_pago_diario: {
+        Row: {
+          id: string;
+          usuario_id: string;
+          fecha: string;
+          pagado: boolean;
+          movimiento_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Relationships: [];
+        Insert: Partial<Database["public"]["Tables"]["registro_pago_diario"]["Row"]> & {
+          usuario_id: string;
+          fecha: string;
+          pagado: boolean;
+        };
+        Update: Partial<Database["public"]["Tables"]["registro_pago_diario"]["Row"]>;
+      };
     };
     Functions: {
       obtener_saldo_actual: {

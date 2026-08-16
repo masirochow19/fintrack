@@ -1,6 +1,9 @@
+import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
 import type { CategoriaOpcion } from "@/services/categorias.service";
 import { obtenerIcono } from "@/utils/icons";
 import { Skeleton } from "@/components/ui/Skeleton";
+import type { TipoCategoria } from "@/types/database.types";
 
 interface CategoriaPickerProps {
   categorias: CategoriaOpcion[] | undefined;
@@ -8,6 +11,7 @@ interface CategoriaPickerProps {
   value: string | null | undefined;
   onChange: (categoriaId: string) => void;
   error?: string;
+  tipo: TipoCategoria;
 }
 
 export function CategoriaPicker({
@@ -16,6 +20,7 @@ export function CategoriaPicker({
   value,
   onChange,
   error,
+  tipo,
 }: CategoriaPickerProps) {
   if (isLoading) {
     return (
@@ -29,9 +34,17 @@ export function CategoriaPicker({
 
   if (!categorias || categorias.length === 0) {
     return (
-      <p className="rounded-xl bg-black/5 px-3 py-2 text-sm text-[#3C3C43] dark:bg-white/10 dark:text-[#EBEBF5]/60">
-        No tienes categorías de este tipo todavía.
-      </p>
+      <div className="rounded-xl bg-black/5 px-3 py-3 text-sm text-[#3C3C43] dark:bg-white/10 dark:text-[#EBEBF5]/60">
+        <p>No tienes categorías de {tipo === "gasto" ? "gasto" : "ingreso"} todavía.</p>
+        <Link
+          to="/categorias/nueva"
+          state={{ tipo }}
+          className="mt-1.5 inline-flex items-center gap-1 font-medium text-ios-blue"
+        >
+          <Plus size={14} />
+          Crear categoría
+        </Link>
+      </div>
     );
   }
 

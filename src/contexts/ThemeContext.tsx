@@ -7,45 +7,92 @@ import {
   useState,
   type ReactNode,
 } from "react";
-
-type Theme = "light" | "dark";
+import { supabase } from "@/services/supabase";
+import { useAuth } from "@/contexts/AuthContext";
+import type { Tema } from "@/types/database.types";
 
 interface ThemeContextValue {
-  theme: Theme;
-  toggleTheme: () => void;
-  setTheme: (theme: Theme) => void;
+  /** Preferencia elegida por la persona: 'claro' | 'oscuro' | 'sistema'. */
+  preferencia: Tema;
+  /** Tema realmente aplicado ('light' | 'dark'), resolviendo 'sistema'. */
+  temaAplicado: "light" | "dark";
+  setPreferencia: (preferencia: Tema) => void;
 }
 
-const STORAGE_KEY = "fintrack:theme";
+const STORAGE_KEY = "fintrack:tema";
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-function getPreferredTheme(): Theme {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === "light" || stored === "dark") return stored;
+function prefiereOscuroElSistema(): boolean {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
 
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  return prefersDark ? "dark" : "light";
+function resolverTemaAplicado(preferencia: Tema): "light" | "dark" {
+  if (preferencia === "sistema") return prefiereOscuroElSistema() ? "dark" : "light";
+  return preferencia === "oscuro" ? "dark" : "light";
+}
+
+function getPreferenciaInicial(): Tema {
+  const guardada = localStorage.getItem(STORAGE_KEY);
+  if (guardada === "claro" || guardada === "oscuro" || guardada === "sistema") return guardada;
+  return "sistema";
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(getPreferredTheme);
+  const { session } = useAuth();
+  const [preferencia, setPreferenciaState] = useState<Tema>(getPreferenciaInicial);
 
+  // Aplica la clase `dark` cuando cambia la preferencia o el tema del sistema.
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle("dark", theme === "dark");
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
+    const aplicar = () => {
+      document.documentElement.classList.toggle("dark", resolverTemaAplicado(preferencia) === "dark");
+    };
+    aplicar();
 
-  const setTheme = useCallback((next: Theme) => setThemeState(next), []);
-  const toggleTheme = useCallback(
-    () => setThemeState((prev) => (prev === "light" ? "dark" : "light")),
-    [],
+    if (preferencia !== "sistema") return;
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    media.addEventListener("change", aplicar);
+    return () => media.removeEventListener("change", aplicar);
+  }, [preferencia]);
+
+  // Al iniciar sesión, la preferencia guardada en Supabase manda sobre la local
+  // (así el tema viaja entre dispositivos).
+  useEffect(() => {
+    if (!session) return;
+    supabase
+      .from("configuracion_usuario")
+      .select("tema")
+      .eq("usuario_id", session.user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.tema) {
+          setPreferenciaState(data.tema);
+          localStorage.setItem(STORAGE_KEY, data.tema);
+        }
+      });
+  }, [session]);
+
+  const setPreferencia = useCallback(
+    (nueva: Tema) => {
+      setPreferenciaState(nueva);
+      localStorage.setItem(STORAGE_KEY, nueva);
+      if (session) {
+        void supabase
+          .from("configuracion_usuario")
+          .update({ tema: nueva })
+          .eq("usuario_id", session.user.id);
+      }
+    },
+    [session],
   );
 
-  const value = useMemo(
-    () => ({ theme, toggleTheme, setTheme }),
-    [theme, toggleTheme, setTheme],
+  const value = useMemo<ThemeContextValue>(
+    () => ({
+      preferencia,
+      temaAplicado: resolverTemaAplicado(preferencia),
+      setPreferencia,
+    }),
+    [preferencia, setPreferencia],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
